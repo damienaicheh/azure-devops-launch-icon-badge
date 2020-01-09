@@ -20,14 +20,14 @@ You will find a complete tutorial here:
 ## Example of variable export for developing the project on a Mac:
 
 ```
-export INPUT_SourceFolder="./../IconsSamples" &&
-export INPUT_Contents="**/*1024@1x.png" &&
+export INPUT_SourceFolder="./../samples/icons" &&
+export INPUT_Contents="**/*.png" &&
 export INPUT_BannerVersionNamePosition="bottomRight" &&
-export INPUT_BannerVersionNumberPosition="top" &&
-export INPUT_BannerVersionNameText="prerelease" &&
-export INPUT_BannerVersionNameColor="#E5A3FF" &&
-export INPUT_BannerVersionNameTextColor="#FFFF00" &&
+export INPUT_BannerVersionNumberPosition="none" &&
+export INPUT_BannerVersionNameText="mvp" &&
+export INPUT_BannerVersionNameColor="#C5000D" &&
+export INPUT_BannerVersionNameTextColor="#FFFFFF" &&
 export INPUT_BannerVersionNumberTextColor="#FFFFFF" &&
-export INPUT_BannerVersionNumberText="98.34.56" &&
+export INPUT_BannerVersionNumberText="1.2.3" &&
 export INPUT_BannerVersionNumberColor="#34424F"
 ```
