@@ -1,0 +1,58 @@
+trigger: none
+
+pool:
+  vmImage: 'macos-latest'
+
+steps:
+
+- task: LaunchIconBadge@1
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/IconsSamples'
+    contents: '**/*.png'
+    bannerVersionNamePosition: 'bottomLeft'
+    bannerVersionNameText: 'Beta'
+
+- task: LaunchIconBadge@1
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/IconsSamples1'
+    contents: '**/*.png'
+    bannerVersionNamePosition: 'topLeft'
+    bannerVersionNameText: 'Alpha'
+    bannerVersionNumberPosition: 'bottom'
+    bannerVersionNumberText: '1.2.3'
+    bannerVersionNumberColor: '#E3C73C'
+    bannerVersionNumberTextColor: '#FFFFFF'
+
+- task: LaunchIconBadge@1
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/IconsSamples2'
+    contents: '**/*.png'
+    bannerVersionNamePosition: 'topRight'
+    bannerVersionNameText: 'Debug'
+    bannerVersionNumberPosition: 'bottom'
+    bannerVersionNumberText: '12.34.567'
+
+- task: ExtractVersionFromTag@1
+  inputs:
+    projectFolderPath: '$(Build.SourcesDirectory)'
+
+- task: LaunchIconBadge@1
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/IconsSamples3'
+    bannerVersionNamePosition: 'bottomRight'
+    bannerVersionNameText: 'Prerelease'
+    bannerVersionNumberPosition: 'top'
+    bannerVersionNumberText: '$(MAJOR).$(MINOR).$(PATCH)($(NUMBER_OF_COMMITS))'
+    bannerVersionNumberTextColor: '#E3C73C'
+
+- task: CopyFiles@2
+  inputs:
+    contents: '**'
+    targetFolder: '$(build.artifactStagingDirectory)'
+    overWrite: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(build.artifactStagingDirectory)' 
+    artifactName: 'drop' 
+    publishLocation: 'Container'

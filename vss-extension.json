@@ -1,0 +1,59 @@
+{
+    "manifestVersion": 1,
+    "id": "launch-icon-task",
+    "name": "Launch Icon Badge",
+    "version": "1.0.0",
+    "publisher": "damienaicheh",
+    "public": true,
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "description": "Differentiate the icon of your mobile application versions using Azure DevOps",
+    "icons": {
+        "default": "icon.png"
+    },
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "tags": [
+        "mobile",
+        "ios",
+        "android"
+    ],
+    "content": {
+        "details": {
+            "path": "OVERVIEW.md"
+        },
+        "license": {
+            "path": "LICENSE.md"
+        }
+    },
+    "links": {
+        "support": {
+            "uri": "https://github.com/damienaicheh/azure-devops-launch-icon-badge/issues"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/damienaicheh/azure-devops-launch-icon-badge"
+    },
+    "files": [
+        {
+            "path": "launchIconBadgeTask"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "launch-icon-badge-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "launchIconBadgeTask"
+            }
+        }
+    ]
+}

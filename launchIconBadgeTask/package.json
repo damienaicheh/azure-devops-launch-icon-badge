@@ -1,0 +1,21 @@
+{
+  "name": "iconmobileextension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "launch-icon-badge.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "azure-pipelines-task-lib": "^2.9.3",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "pureimage": "^0.1.6"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.14",
+    "@types/q": "^1.5.2"
+  }
+}
