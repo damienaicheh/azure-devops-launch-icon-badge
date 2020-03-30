@@ -1,6 +1,6 @@
 {
   "name": "iconmobileextension",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "launch-icon-badge.js",
   "scripts": {
