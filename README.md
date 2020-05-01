@@ -8,6 +8,8 @@ Available on [Visual Studio Marketplace](https://marketplace.visualstudio.com/it
 
 ## Features
 
+Draw banners on top of your icons.
+
 ## Tutorial
 You will find a complete tutorial here:
 
