@@ -67,7 +67,7 @@ async function run() {
     }
     catch (err) {
         console.log(err);
-        task.setResult(task.TaskResult.Failed, err.message);
+        task.setResult(task.TaskResult.Failed, err);
     }
 }
 
