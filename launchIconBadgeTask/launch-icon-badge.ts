@@ -231,6 +231,7 @@ function drawText(ctx: CanvasRenderingContext2D, x: number, y: number, headbanne
             ctx.translate(centerX + (letterHeight * ratio), centerY + (letterHeight * ratio));
             ctx.rotate(- angle * Math.PI / 180);
             ctx.fillText(headbannerText.toUpperCase(), 0, 0);
+            break;
         case BannerVersionNamePosition.TopLeft:
             centerY = centerY + (textHeight.width * ratio);
             ctx.translate(centerX, centerY + letterHeight);
@@ -242,6 +243,7 @@ function drawText(ctx: CanvasRenderingContext2D, x: number, y: number, headbanne
             ctx.translate(centerX - letterHeight, centerY);
             ctx.rotate(angle * Math.PI / 180);
             ctx.fillText(headbannerText.toUpperCase(), 0, 0);
+            break;
         case BannerVersionNamePosition.TopRight:
             centerY = centerY - (textHeight.width * ratio);
             ctx.translate(centerX - (letterHeight * ratio), centerY + (letterHeight * ratio));
