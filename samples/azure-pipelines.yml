@@ -29,7 +29,7 @@ steps:
     contents: '**/*.png'
     bannerVersionNamePosition: 'topRight'
     bannerVersionNameText: 'Debug'
-    bannerVersionNumberPosition: 'bottom'
+    bannerVersionNumberPosition: 'center'
     bannerVersionNumberText: '12.34.567'
 
 - task: ExtractVersionFromTag@1

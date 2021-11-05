@@ -82,7 +82,8 @@
             "options": {
                 "none": "None",
                 "top": "Top",
-                "bottom": "Bottom"
+                "bottom": "Bottom",
+                "center": "Center"
             }
         },
         {
