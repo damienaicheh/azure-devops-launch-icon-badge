@@ -19,7 +19,7 @@ Check the [Github](https://github.com/damienaicheh/azure-devops-launch-icon-badg
     bannerVersionNameText: 'Prerelease'  # Optional. Default is: ''
     bannerVersionNameColor: '#C5000D' # Optional. Default is: '#C5000D'
     bannerVersionNameTextColor: '#FFFFFF' # Optional. Default is: '#FFFFFF'
-    bannerVersionNumberPosition: 'top' # Optional. top, bottom, none. Default is: 'none'
+    bannerVersionNumberPosition: 'top' # Optional. top, bottom, center, none. Default is: 'none'
     bannerVersionNumberText: '1.2.3' # Optional. Default is: ''
     bannerVersionNumberColor: '#34424F' # Optional. Default is: '#34424F'
     bannerVersionNumberTextColor: '#FFFFFF' # Optional. Default is: '#FFFFFF'

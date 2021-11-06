@@ -78,10 +78,8 @@ async function generate(imagePath: string, headerBannerPosition: string, headerP
         let x = img.height;
         let y = img.width;
 
-        if (headerPosition == 'top') {
-            drawVersionheader(ctx, x, y, true, iconHeaderOptions);
-        } else if (headerPosition == 'bottom') {
-            drawVersionheader(ctx, x, y, false, iconHeaderOptions);
+        if (headerPosition != 'none') {
+            drawVersionheader(ctx, x, y, headerPosition, iconHeaderOptions);
         }
 
         switch (headerBannerPosition) {
@@ -113,7 +111,7 @@ async function generate(imagePath: string, headerBannerPosition: string, headerP
 }
 
 /// Draw version number banner on top or bottom of the icon.
-function drawVersionheader(ctx: CanvasRenderingContext2D, x: number, y: number, onTop: boolean, iconHeaderOptions: IconOptions) {
+function drawVersionheader(ctx: CanvasRenderingContext2D, x: number, y: number, headerPosition: string, iconHeaderOptions: IconOptions) {
     ctx.save();
 
     let height = 0.15 * y;
@@ -121,11 +119,14 @@ function drawVersionheader(ctx: CanvasRenderingContext2D, x: number, y: number, 
 
     ctx.fillStyle = iconHeaderOptions.color;
 
-    if (onTop) {
+    if (headerPosition == 'top') {
         ctx.fillRect(0.25 * x, 0, width, height);
-    } else {
+    } else if (headerPosition == 'bottom') {
         ctx.fillRect(0.25 * x, y - height, width, height);
+    } else if (headerPosition == 'center') {
+        ctx.fillRect(0.25 * x, (y / 2) - height, width, height);
     }
+
 
     ctx.fillStyle = iconHeaderOptions.textColor;
 
@@ -135,10 +136,12 @@ function drawVersionheader(ctx: CanvasRenderingContext2D, x: number, y: number, 
     let textCenterX = (x / 2) - (measure.width / 2);
     var textCenterY = 0;
 
-    if (onTop) {
+    if (headerPosition == 'top') {
         textCenterY = height - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
-    } else {
+    } else if (headerPosition == 'bottom') {
         textCenterY = y - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
+    } else if (headerPosition == 'center') {
+        textCenterY = (y / 2) - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
     }
 
     ctx.translate(textCenterX, textCenterY);
