@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "launch-icon-task",
     "name": "Launch Icon Badge",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "publisher": "damienaicheh",
     "public": true,
     "targets": [

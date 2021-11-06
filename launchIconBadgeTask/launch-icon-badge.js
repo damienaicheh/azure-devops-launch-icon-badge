@@ -73,12 +73,6 @@ function generate(imagePath, headerBannerPosition, headerPosition, iconHeaderOpt
             let ctx = img.getContext('2d');
             let x = img.height;
             let y = img.width;
-            if (headerPosition == 'top') {
-                drawVersionheader(ctx, x, y, true, iconHeaderOptions);
-            }
-            else if (headerPosition == 'bottom') {
-                drawVersionheader(ctx, x, y, false, iconHeaderOptions);
-            }
             switch (headerBannerPosition) {
                 case 'bottomRight':
                     drawHeadbannerRight(ctx, x, y, iconHeadbannerOptions.color, false);
@@ -100,6 +94,9 @@ function generate(imagePath, headerBannerPosition, headerPosition, iconHeaderOpt
                     // None
                     break;
             }
+            if (headerPosition != 'none') {
+                drawVersionheader(ctx, x, y, headerPosition, iconHeaderOptions);
+            }
             PImage.encodePNGToStream(img, fs.createWriteStream(imagePath)).then(() => {
                 console.log("Edition succeeded for:" + imagePath);
             });
@@ -107,27 +104,33 @@ function generate(imagePath, headerBannerPosition, headerPosition, iconHeaderOpt
     });
 }
 /// Draw version number banner on top or bottom of the icon.
-function drawVersionheader(ctx, x, y, onTop, iconHeaderOptions) {
+function drawVersionheader(ctx, x, y, headerPosition, iconHeaderOptions) {
     ctx.save();
     let height = 0.15 * y;
     let width = 0.5 * x;
     ctx.fillStyle = iconHeaderOptions.color;
-    if (onTop) {
+    if (headerPosition == 'top') {
         ctx.fillRect(0.25 * x, 0, width, height);
     }
-    else {
+    else if (headerPosition == 'bottom') {
         ctx.fillRect(0.25 * x, y - height, width, height);
+    }
+    else if (headerPosition == 'center') {
+        ctx.fillRect(0.25 * x, ((y + height) / 2) - height, width, height);
     }
     ctx.fillStyle = iconHeaderOptions.textColor;
     computeFontSize(ctx, iconHeaderOptions.text, width, height);
     let measure = ctx.measureText(iconHeaderOptions.text);
     let textCenterX = (x / 2) - (measure.width / 2);
     var textCenterY = 0;
-    if (onTop) {
+    if (headerPosition == 'top') {
         textCenterY = height - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
     }
-    else {
+    else if (headerPosition == 'bottom') {
         textCenterY = y - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
+    }
+    else if (headerPosition == 'center') {
+        textCenterY = ((y + height) / 2) - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
     }
     ctx.translate(textCenterX, textCenterY);
     ctx.fillText(iconHeaderOptions.text, 0, 0);

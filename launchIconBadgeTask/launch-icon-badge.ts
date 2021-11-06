@@ -78,10 +78,6 @@ async function generate(imagePath: string, headerBannerPosition: string, headerP
         let x = img.height;
         let y = img.width;
 
-        if (headerPosition != 'none') {
-            drawVersionheader(ctx, x, y, headerPosition, iconHeaderOptions);
-        }
-
         switch (headerBannerPosition) {
             case 'bottomRight':
                 drawHeadbannerRight(ctx, x, y, iconHeadbannerOptions.color, false);
@@ -104,6 +100,10 @@ async function generate(imagePath: string, headerBannerPosition: string, headerP
                 break;
         }
 
+        if (headerPosition != 'none') {
+            drawVersionheader(ctx, x, y, headerPosition, iconHeaderOptions);
+        }
+
         PImage.encodePNGToStream(img, fs.createWriteStream(imagePath)).then(() => {
             console.log("Edition succeeded for:" + imagePath);
         });
@@ -124,7 +124,7 @@ function drawVersionheader(ctx: CanvasRenderingContext2D, x: number, y: number, 
     } else if (headerPosition == 'bottom') {
         ctx.fillRect(0.25 * x, y - height, width, height);
     } else if (headerPosition == 'center') {
-        ctx.fillRect(0.25 * x, (y / 2) - height, width, height);
+        ctx.fillRect(0.25 * x, ((y + height)  / 2) - height, width, height);
     }
 
 
@@ -141,7 +141,7 @@ function drawVersionheader(ctx: CanvasRenderingContext2D, x: number, y: number, 
     } else if (headerPosition == 'bottom') {
         textCenterY = y - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
     } else if (headerPosition == 'center') {
-        textCenterY = (y / 2) - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
+        textCenterY = ((y + height) / 2) - (((height) - measure.emHeightAscent - measure.emHeightDescent) / 2);
     }
 
     ctx.translate(textCenterX, textCenterY);
