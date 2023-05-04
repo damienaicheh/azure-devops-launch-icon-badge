@@ -13,6 +13,7 @@ const task = require("azure-pipelines-task-lib/task");
 const fs = require("fs");
 const PImage = require("pureimage");
 const path = require("path");
+const xmldom_1 = require("xmldom");
 class IconOptions {
     constructor(color, textColor, text) {
         this.color = color;
@@ -52,7 +53,7 @@ function run() {
                 let bannerVersionNumberText = task.getInput('bannerVersionNumberText');
                 let iconHeaderOptions = new IconOptions(bannerVersionNumberColor, bannerVersionNumberTextColor, bannerVersionNumberText);
                 let iconHeadbannerOptions = new IconOptions(bannerVersionNameColor, bannerVersionNameTextColor, bannerVersionNameText);
-                let font = PImage.registerFont(path.join(__dirname, 'font/Roboto-Bold.ttf'), { family: 'Roboto Bold' });
+                let font = PImage.registerFont(path.join('font/Roboto-Bold.ttf'), 'Roboto Bold', 400, 'normal', 'latin');
                 yield font.load(() => __awaiter(this, void 0, void 0, function* () {
                     for (let index = 0; index < matchedFiles.length; index++) {
                         yield generate(matchedFiles[index], bannerVersionNamePosition, bannerVersionNumberPosition, iconHeaderOptions, iconHeadbannerOptions);
@@ -67,39 +68,108 @@ function run() {
         }
     });
 }
+function GetBitmap(img, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions) {
+    let ctx = img.getContext('2d');
+    let x = img.height;
+    let y = img.width;
+    switch (headerBannerPosition) {
+        case 'bottomRight':
+            drawHeadbannerRight(ctx, x, y, iconHeadbannerOptions.color, false);
+            drawText(ctx, x, y, iconHeadbannerOptions.text, iconHeadbannerOptions.textColor, BannerVersionNamePosition.BottomRight);
+            break;
+        case 'bottomLeft':
+            drawHeadbannerLeft(ctx, x, y, iconHeadbannerOptions.color, false);
+            drawText(ctx, x, y, iconHeadbannerOptions.text, iconHeadbannerOptions.textColor, BannerVersionNamePosition.BottomLeft);
+            break;
+        case 'topLeft':
+            drawHeadbannerLeft(ctx, x, y, iconHeadbannerOptions.color, true);
+            drawText(ctx, x, y, iconHeadbannerOptions.text, iconHeadbannerOptions.textColor, BannerVersionNamePosition.TopLeft);
+            break;
+        case 'topRight':
+            drawHeadbannerRight(ctx, x, y, iconHeadbannerOptions.color, true);
+            drawText(ctx, x, y, iconHeadbannerOptions.text, iconHeadbannerOptions.textColor, BannerVersionNamePosition.TopRight);
+            break;
+        default:
+            // None
+            break;
+    }
+    if (headerPosition != 'none') {
+        drawVersionheader(ctx, x, y, headerPosition, iconHeaderOptions);
+    }
+    return img;
+}
+function processImage(imagePath, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions, decodeFn, encodeFn) {
+    return decodeFn(fs.createReadStream(imagePath)).then((img) => {
+        img = GetBitmap(img, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions);
+        return encodeFn(img, fs.createWriteStream(imagePath + "1.png"));
+    }).then(() => {
+        console.log("Edition succeeded for: " + imagePath);
+    });
+}
 function generate(imagePath, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions) {
     return __awaiter(this, void 0, void 0, function* () {
-        PImage.decodePNGFromStream(fs.createReadStream(imagePath)).then((img) => {
-            let ctx = img.getContext('2d');
-            let x = img.height;
-            let y = img.width;
-            switch (headerBannerPosition) {
-                case 'bottomRight':
-                    drawHeadbannerRight(ctx, x, y, iconHeadbannerOptions.color, false);
-                    drawText(ctx, x, y, iconHeadbannerOptions.text, iconHeadbannerOptions.textColor, BannerVersionNamePosition.BottomRight);
-                    break;
-                case 'bottomLeft':
-                    drawHeadbannerLeft(ctx, x, y, iconHeadbannerOptions.color, false);
-                    drawText(ctx, x, y, iconHeadbannerOptions.text, iconHeadbannerOptions.textColor, BannerVersionNamePosition.BottomLeft);
-                    break;
-                case 'topLeft':
-                    drawHeadbannerLeft(ctx, x, y, iconHeadbannerOptions.color, true);
-                    drawText(ctx, x, y, iconHeadbannerOptions.text, iconHeadbannerOptions.textColor, BannerVersionNamePosition.TopLeft);
-                    break;
-                case 'topRight':
-                    drawHeadbannerRight(ctx, x, y, iconHeadbannerOptions.color, true);
-                    drawText(ctx, x, y, iconHeadbannerOptions.text, iconHeadbannerOptions.textColor, BannerVersionNamePosition.TopRight);
-                    break;
-                default:
-                    // None
-                    break;
+        if (imagePath.endsWith(".png")) {
+            return processImage(imagePath, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions, PImage.decodePNGFromStream, PImage.encodePNGToStream);
+        }
+        else if (imagePath.endsWith(".jpg") || imagePath.endsWith(".jpeg")) {
+            return processImage(imagePath, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions, PImage.decodeJPEGFromStream, PImage.encodeJPEGToStream);
+        }
+        else if (imagePath.endsWith(".svg")) {
+            writeTextOnSvgImage(imagePath, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions, imagePath + 'output.svg')
+                .then(() => console.log('Image generation succeeded!'))
+                .catch((error) => console.error(`Error generating image: ${error}`));
+        }
+    });
+}
+function writeTextOnSvgImage(filePath, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions, outputFilePath) {
+    // Read the SVG file from the specified path
+    const svgString = fs.readFileSync(filePath, 'utf-8');
+    // Parse the SVG string into an XML document
+    const svgDoc = new xmldom_1.DOMParser().parseFromString(svgString, 'text/xml');
+    // Create a new text element and set its attributes
+    if (headerPosition != 'none') {
+        const textElem = svgDoc.createElement('text');
+        textElem.setAttribute('x', '50%');
+        textElem.setAttribute('y', '50%');
+        textElem.setAttribute('text-anchor', 'middle');
+        textElem.setAttribute('dominant-baseline', 'central');
+        textElem.setAttribute('font-size', '24');
+        textElem.setAttribute('fill', iconHeaderOptions.textColor);
+        // Create a text node with the specified text and append it to the text element
+        const textNode = svgDoc.createTextNode(iconHeaderOptions.text);
+        textElem.appendChild(textNode);
+        const svgWidth = svgDoc.documentElement.getAttribute('width');
+        const svgHeight = svgDoc.documentElement.getAttribute('height');
+        // Create a new g element to contain the background and text elements
+        const gElem = svgDoc.createElement('g');
+        // Create a rectangle element for the background
+        const rectElem = svgDoc.createElement('rect');
+        const w = 24 * iconHeaderOptions.text.length;
+        const h = 24;
+        rectElem.setAttribute('x', String((Number(svgWidth) - w) / 2)); // 50 is the width of the rectangle
+        rectElem.setAttribute('y', String((Number(svgHeight) - h) / 2)); // 50 is the height of the rectangle
+        rectElem.setAttribute('width', w); // Set the width to the width of the text element
+        rectElem.setAttribute('height', h); // Set the height to the height of the text element
+        rectElem.setAttribute('fill', iconHeaderOptions.color);
+        // Append the rectangle element to the new g element
+        gElem.appendChild(rectElem);
+        // Append the text element to the new g element
+        gElem.appendChild(textElem);
+        // Set the transform attribute of the g element to position it in the center of the SVG canvas
+        gElem.setAttribute('transform', `translate(${svgDoc.documentElement.clientWidth / 2 - w / 2},${svgDoc.documentElement.clientHeight / 2 - h / 2})`);
+        // Append the text element to the SVG document
+        svgDoc.documentElement.appendChild(gElem);
+    }
+    // Serialize the SVG document to a string
+    const updatedSvgString = new xmldom_1.XMLSerializer().serializeToString(svgDoc);
+    return new Promise((resolve, reject) => {
+        fs.writeFile(outputFilePath, updatedSvgString, (error) => {
+            if (error) {
+                reject(error);
             }
-            if (headerPosition != 'none') {
-                drawVersionheader(ctx, x, y, headerPosition, iconHeaderOptions);
+            else {
+                resolve();
             }
-            PImage.encodePNGToStream(img, fs.createWriteStream(imagePath)).then(() => {
-                console.log("Edition succeeded for:" + imagePath);
-            });
         });
     });
 }
