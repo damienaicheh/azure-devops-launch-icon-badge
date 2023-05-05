@@ -129,25 +129,43 @@ function writeTextOnSvgImage(filePath, headerBannerPosition, headerPosition, ico
     // Create a new text element and set its attributes
     if (headerPosition != 'none') {
         const textElem = svgDoc.createElement('text');
-        textElem.setAttribute('x', '50%');
-        textElem.setAttribute('y', '50%');
-        textElem.setAttribute('text-anchor', 'middle');
-        textElem.setAttribute('dominant-baseline', 'central');
+        const rectElem = svgDoc.createElement('rect');
+        const w = 24 * iconHeaderOptions.text.length;
+        const h = 24;
+        const svgWidth = svgDoc.documentElement.getAttribute('width');
+        const svgHeight = svgDoc.documentElement.getAttribute('height');
+        if (headerPosition == 'top') {
+            textElem.setAttribute('x', '50%');
+            textElem.setAttribute('y', String(h / 2));
+            textElem.setAttribute('text-anchor', 'middle');
+            textElem.setAttribute('dominant-baseline', 'central');
+            rectElem.setAttribute('x', String((Number(svgWidth) - w) / 2));
+            rectElem.setAttribute('y', String(0));
+        }
+        else if (headerPosition == 'bottom') {
+            textElem.setAttribute('x', '50%');
+            textElem.setAttribute('y', String(svgHeight - h / 2));
+            textElem.setAttribute('text-anchor', 'middle');
+            textElem.setAttribute('dominant-baseline', 'central');
+            rectElem.setAttribute('x', String((Number(svgWidth) - w) / 2));
+            rectElem.setAttribute('y', String((Number(svgHeight) - h)));
+        }
+        else if (headerPosition == 'center') {
+            textElem.setAttribute('x', '50%');
+            textElem.setAttribute('y', '50%');
+            textElem.setAttribute('text-anchor', 'middle');
+            textElem.setAttribute('dominant-baseline', 'central');
+            rectElem.setAttribute('x', String((Number(svgWidth) - w) / 2));
+            rectElem.setAttribute('y', String((Number(svgHeight) - h) / 2));
+        }
         textElem.setAttribute('font-size', '24');
         textElem.setAttribute('fill', iconHeaderOptions.textColor);
         // Create a text node with the specified text and append it to the text element
         const textNode = svgDoc.createTextNode(iconHeaderOptions.text);
         textElem.appendChild(textNode);
-        const svgWidth = svgDoc.documentElement.getAttribute('width');
-        const svgHeight = svgDoc.documentElement.getAttribute('height');
         // Create a new g element to contain the background and text elements
         const gElem = svgDoc.createElement('g');
         // Create a rectangle element for the background
-        const rectElem = svgDoc.createElement('rect');
-        const w = 24 * iconHeaderOptions.text.length;
-        const h = 24;
-        rectElem.setAttribute('x', String((Number(svgWidth) - w) / 2)); // 50 is the width of the rectangle
-        rectElem.setAttribute('y', String((Number(svgHeight) - h) / 2)); // 50 is the height of the rectangle
         rectElem.setAttribute('width', w); // Set the width to the width of the text element
         rectElem.setAttribute('height', h); // Set the height to the height of the text element
         rectElem.setAttribute('fill', iconHeaderOptions.color);
