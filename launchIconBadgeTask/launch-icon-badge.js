@@ -116,7 +116,7 @@ function generate(imagePath, headerBannerPosition, headerPosition, iconHeaderOpt
         }
         else if (imagePath.endsWith(".svg")) {
             writeTextOnSvgImage(imagePath, headerBannerPosition, headerPosition, iconHeaderOptions, iconHeadbannerOptions, imagePath + 'output.svg')
-                .then(() => console.log('Image generation succeeded!'))
+                .then(() => console.log("Edition succeeded for: " + imagePath))
                 .catch((error) => console.error(`Error generating image: ${error}`));
         }
     });
@@ -126,14 +126,81 @@ function writeTextOnSvgImage(filePath, headerBannerPosition, headerPosition, ico
     const svgString = fs.readFileSync(filePath, 'utf-8');
     // Parse the SVG string into an XML document
     const svgDoc = new xmldom_1.DOMParser().parseFromString(svgString, 'text/xml');
+    const svgWidth = svgDoc.documentElement.getAttribute('width');
+    const svgHeight = svgDoc.documentElement.getAttribute('height');
+    const wb = 24 * Math.max(iconHeadbannerOptions.text.length - 5, 5);
+    const hb = 24;
+    const textElem = svgDoc.createElement('text');
+    const rectElem = svgDoc.createElement('rect');
+    // Create a new g element to contain the background and text elements
+    const gElem = svgDoc.createElement('g');
+    let w = 0;
+    switch (headerBannerPosition) {
+        case 'bottomRight':
+            textElem.setAttribute('x', String(wb / 2 - hb / 2));
+            textElem.setAttribute('y', String(hb / 2));
+            textElem.setAttribute('text-anchor', 'middle');
+            textElem.setAttribute('dominant-baseline', 'central');
+            rectElem.setAttribute('x', String(0));
+            rectElem.setAttribute('y', String(0));
+            w = svgWidth - Math.sqrt(wb * wb / 2) + hb;
+            gElem.setAttribute('transform', `translate(${w}, ${svgHeight}) rotate(-45)`);
+            break;
+        case 'bottomLeft':
+            textElem.setAttribute('x', String(wb / 2 - hb / 2));
+            textElem.setAttribute('y', String(hb / 2));
+            textElem.setAttribute('text-anchor', 'middle');
+            textElem.setAttribute('dominant-baseline', 'central');
+            rectElem.setAttribute('x', String(0));
+            rectElem.setAttribute('y', String(0));
+            w = svgHeight - Math.sqrt(wb * wb / 2) + hb / 2;
+            gElem.setAttribute('transform', `translate(0, ${w}) rotate(45)`);
+            break;
+        case 'topLeft':
+            textElem.setAttribute('x', String(wb / 2 - hb / 2));
+            textElem.setAttribute('y', String(hb / 2));
+            textElem.setAttribute('text-anchor', 'middle');
+            textElem.setAttribute('dominant-baseline', 'central');
+            rectElem.setAttribute('x', String(0));
+            rectElem.setAttribute('y', String(0));
+            w = Math.sqrt(wb * wb / 2) - hb / 2;
+            gElem.setAttribute('transform', `translate(${-hb}, ${w}) rotate(-45)`);
+            break;
+        case 'topRight':
+            textElem.setAttribute('x', String(wb / 2));
+            textElem.setAttribute('y', String(hb / 2));
+            textElem.setAttribute('text-anchor', 'middle');
+            textElem.setAttribute('dominant-baseline', 'central');
+            rectElem.setAttribute('x', String(0));
+            rectElem.setAttribute('y', String(0));
+            w = svgWidth - Math.sqrt(wb * wb / 2) + hb;
+            gElem.setAttribute('transform', `translate(${w}, ${-hb}) rotate(45)`);
+            break;
+        default:
+            // None
+            break;
+    }
+    textElem.setAttribute('font-size', String(hb));
+    textElem.setAttribute('fill', iconHeadbannerOptions.textColor);
+    // Create a text node with the specified text and append it to the text element
+    const textNode = svgDoc.createTextNode(iconHeadbannerOptions.text);
+    textElem.appendChild(textNode);
+    // Create a rectangle element for the background
+    rectElem.setAttribute('width', wb); // Set the width to the width of the text element
+    rectElem.setAttribute('height', hb); // Set the height to the height of the text element
+    rectElem.setAttribute('fill', iconHeadbannerOptions.color);
+    // Append the rectangle element to the new g element
+    gElem.appendChild(rectElem);
+    // Append the text element to the new g element
+    gElem.appendChild(textElem);
+    // Append the text element to the SVG document
+    svgDoc.documentElement.appendChild(gElem);
     // Create a new text element and set its attributes
     if (headerPosition != 'none') {
         const textElem = svgDoc.createElement('text');
         const rectElem = svgDoc.createElement('rect');
         const w = 24 * iconHeaderOptions.text.length;
         const h = 24;
-        const svgWidth = svgDoc.documentElement.getAttribute('width');
-        const svgHeight = svgDoc.documentElement.getAttribute('height');
         if (headerPosition == 'top') {
             textElem.setAttribute('x', '50%');
             textElem.setAttribute('y', String(h / 2));
@@ -173,8 +240,6 @@ function writeTextOnSvgImage(filePath, headerBannerPosition, headerPosition, ico
         gElem.appendChild(rectElem);
         // Append the text element to the new g element
         gElem.appendChild(textElem);
-        // Set the transform attribute of the g element to position it in the center of the SVG canvas
-        gElem.setAttribute('transform', `translate(${svgDoc.documentElement.clientWidth / 2 - w / 2},${svgDoc.documentElement.clientHeight / 2 - h / 2})`);
         // Append the text element to the SVG document
         svgDoc.documentElement.appendChild(gElem);
     }
